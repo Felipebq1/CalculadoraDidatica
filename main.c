@@ -4,6 +4,7 @@
 * Data: [24/08/2024]
 * Revisões:
 * - [24, 13:40] - [implementação da conversão para base 2]
+* - [26, 09:46] - implementação da conversão para base 8]
 */
 
 #include <stdio.h>
@@ -24,6 +25,24 @@ void decimalParaBinario(int numero) {
   printf("Número binário: ");
   for (int i = resto - 1; i >= 0; i--) {
     printf("%d", binario[i]);
+  }
+  printf("\n");
+}
+
+void decimalParaBase8(int numero){
+  int octal[32];
+  int resto = 0;
+
+  printf("\nConversão Decimal -> Base 8:\n");
+  while(numero > 0){
+    octal[resto] = numero % 8;
+    printf("Dividindo %d por 8, Resto: %d\n",numero, octal[resto]);
+    numero = numero / 8;
+    resto++;
+  }
+  printf("Número base 8: ");
+  for (int i = resto - 1; i >= 0; i--) {
+    printf("%d", octal[i]);
   }
   printf("\n");
 }
@@ -54,6 +73,8 @@ int main() {
 
     if (opcao == 1) {
       decimalParaBinario(numero);
+    }else if(opcao == 2){
+      decimalParaBase8(numero);
     }
   }
   return 0;
