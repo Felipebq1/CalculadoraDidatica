@@ -6,7 +6,8 @@
 * - [24, 13:40] - [implementação da conversão para base 2]
 * - [26, 09:46] - [implementação da conversão para base 8]
 * - [26, 11:05] - [implementação da conversão para base 16]
-* - [26, 16,52] - [implementação da conversão para o código bdc] 
+* - [26, 16:52] - [implementação da conversão para o código bdc] 
+* - [27, 15:26] - [implementação da conversão para complemento a 2]
 */
 
 #include <stdio.h>
@@ -102,6 +103,81 @@ void decimalParaBdc(int numero) {
   printf("\n");
 }
 
+
+void decimalParaComplementoA2(int numero) {
+  int complementoA2[16] = {0}; // Inicializa o vetor com zeros
+  int resto = 0;
+    
+  if (numero < -32768 || numero > 32767) {
+    printf("Número inválido, fora do intervalo de 16 bits.\n");
+    return;
+  }
+  int valorNumero = numero;
+  if (numero >= 0) {
+  // Para números positivos
+    while (numero > 0) {
+      complementoA2[resto] = numero % 2;
+      printf("Dividindo %d por 2, Resto: %d\n", numero, complementoA2[resto]);
+      numero = numero / 2;
+      resto++;
+    }
+
+    while (resto < 16) {
+      complementoA2[resto] = 0;
+      resto++;
+    }
+  }else{
+  // Para números negativos
+    numero = -numero; 
+    int valorNumero = numero;
+    printf("\n%d vira %d\n", -numero, valorNumero);
+    while (numero > 0) {
+      complementoA2[resto] = numero % 2;
+      printf("Dividindo %d por 2, Resto: %d\n", numero, complementoA2[resto]);
+      numero = numero / 2;
+      resto++;
+    }
+    
+    while (resto < 16) {
+      complementoA2[resto] = 0;
+      resto++;
+    }
+
+    printf("\n %d no complemento a 2: \n", valorNumero);
+    for (int i = 15; i >= 0; i--) {
+      printf("%d", complementoA2[i]);
+    }
+    printf("\n");
+        
+    printf("\nInversão dos bits: \n");
+    for (int i = 0; i < 16; i++) {
+      if (complementoA2[i] == 0) {
+        complementoA2[i] = 1;
+      } else {
+        complementoA2[i] = 0;
+      }
+    }
+
+    for (int i = 15; i >= 0; i--) {
+      printf("%d", complementoA2[i]);
+    }
+    printf("\n");
+
+    int carry = 1;
+    for (int i = 0; i < 16; i++) {
+      int soma = complementoA2[i] + carry;
+      complementoA2[i] = soma % 2;
+      carry = soma / 2;
+    }
+  }
+  
+  printf("\nNúmero %d no complemento a 2: \n", valorNumero);
+  for (int i = 15; i >= 0; i--) {
+    printf("%d", complementoA2[i]);
+  }
+  printf("\n");
+}
+
 int main() {
   int opcao, numero;
 
@@ -125,7 +201,7 @@ int main() {
   
     printf("Digite o número na base 10: ");
     scanf("%d", &numero);
-
+    
     if (opcao == 1) {
       decimalParaBinario(numero);
     }else if(opcao == 2){
@@ -134,6 +210,8 @@ int main() {
       decimalParaBase16(numero);
     }else if(opcao == 4){
       decimalParaBdc(numero);
+    }else if(opcao == 5){
+      decimalParaComplementoA2(numero);
     }
   }
   return 0;
