@@ -8,6 +8,7 @@
 * - [26, 11:05] - [implementação da conversão para base 16]
 * - [26, 16:52] - [implementação da conversão para o código bdc] 
 * - [27, 15:26] - [implementação da conversão para complemento a 2]
+* - [28, 15:11] - [implementacao da conversão real em decimal para float e double]
 */
 
 #include <stdio.h>
@@ -16,7 +17,7 @@
 void decimalParaBinario(int numero) {
   int binario[32];
   int resto = 0;
-  
+    
   printf("\nConversão Decimal -> Binário:\n");
   while (numero > 0) {
     binario[resto] = numero % 2;
@@ -24,7 +25,7 @@ void decimalParaBinario(int numero) {
     numero = numero / 2;
     resto++;
   }
-  
+    
   printf("Número binário: ");
   for (int i = resto - 1; i >= 0; i--) {
     printf("%d", binario[i]);
@@ -43,6 +44,7 @@ void decimalParaBase8(int numero){
     numero = numero / 8;
     resto++;
   }
+  
   printf("Número base 8: ");
   for (int i = resto - 1; i >= 0; i--) {
     printf("%d", octal[i]);
@@ -67,7 +69,7 @@ void decimalParaBase16(int numero) {
     numero = numero / 16;
     i++;
   }
-  
+    
   printf("Número base 16: ");
   for (int j = i - 1; j >= 0; j--) {
     printf("%c", hexaDecimal[j]);  
@@ -103,9 +105,8 @@ void decimalParaBdc(int numero) {
   printf("\n");
 }
 
-
 void decimalParaComplementoA2(int numero) {
-  int complementoA2[16] = {0}; // Inicializa o vetor com zeros
+  int complementoA2[16];
   int resto = 0;
     
   if (numero < -32768 || numero > 32767) {
@@ -113,6 +114,7 @@ void decimalParaComplementoA2(int numero) {
     return;
   }
   int valorNumero = numero;
+  
   if (numero >= 0) {
   // Para números positivos
     while (numero > 0) {
@@ -129,8 +131,7 @@ void decimalParaComplementoA2(int numero) {
   }else{
   // Para números negativos
     numero = -numero; 
-    int valorNumero = numero;
-    printf("\n%d vira %d\n", -numero, valorNumero);
+    printf("\n%d vira %d\n", -valorNumero, numero);
     while (numero > 0) {
       complementoA2[resto] = numero % 2;
       printf("Dividindo %d por 2, Resto: %d\n", numero, complementoA2[resto]);
@@ -143,19 +144,15 @@ void decimalParaComplementoA2(int numero) {
       resto++;
     }
 
-    printf("\n %d no complemento a 2: \n", valorNumero);
+    printf("\n%d no complemento a 2: \n", valorNumero);
     for (int i = 15; i >= 0; i--) {
       printf("%d", complementoA2[i]);
     }
     printf("\n");
-        
+            
     printf("\nInversão dos bits: \n");
     for (int i = 0; i < 16; i++) {
-      if (complementoA2[i] == 0) {
-        complementoA2[i] = 1;
-      } else {
-        complementoA2[i] = 0;
-      }
+      complementoA2[i] = complementoA2[i] == 0 ? 1 : 0;
     }
 
     for (int i = 15; i >= 0; i--) {
@@ -170,16 +167,48 @@ void decimalParaComplementoA2(int numero) {
       carry = soma / 2;
     }
   }
-  
+    
   printf("\nNúmero %d no complemento a 2: \n", valorNumero);
   for (int i = 15; i >= 0; i--) {
     printf("%d", complementoA2[i]);
   }
-  printf("\n");
+   printf("\n");
+}
+
+void decimalParaFloat(float numero) {
+   unsigned int *p = (unsigned int*)&numero;
+  unsigned int valor = *p;
+
+  unsigned int sinal = (valor >> 31) & 1;
+  unsigned int expoente = (valor >> 23) & 0xFF;
+ 
+  unsigned int fracao = valor & 0x7FFFFF;
+
+  printf("\nConversão de Decimal para Float:\n");
+  printf("Sinal: %u\n", sinal);
+  printf("Expoente: %u (com viés: %d)\n", expoente, expoente - 127);
+  printf("Fração: 0x%X\n", fracao);
+}
+
+void decimalParaDouble(double numero) {
+  unsigned long *p = (unsigned long*)&numero;
+  long valor = *p;
+  
+  unsigned int sinal = (valor >> 63) & 1;
+  unsigned int expoente = (valor >> 52) & 0x7FF;
+    
+  unsigned long fracao = valor & 0xFFFFFFFFFFFFF;
+
+  printf("\nConversão de Decimal para Double:\n");
+  printf("Sinal: %u\n", sinal);
+  printf("Expoente: %u (com viés: %d)\n", expoente, expoente - 1023);
+  printf("Fração: 0x%lX\n", fracao);
 }
 
 int main() {
   int opcao, numero;
+  float numeroFloat;
+  double numeroDouble;
 
   while (1) {
     printf("\nCalculadora Didática\n");
@@ -188,30 +217,42 @@ int main() {
     printf("3 - Converter de Base 10 para Base 16\n");
     printf("4 - Converter de Base 10 para Código BCD\n");
     printf("5 - Converter de Base 10 para Complemento a 2 (16 bits)\n");
-    printf("6 - Converter Real em Decimal para Float e Double\n");
-    printf("7 - Sair\n");
+    printf("6 - Converter Real em Decimal para Float\n");
+    printf("7 - Converter Real em Decimal para Double\n");
+    printf("8 - Sair\n");
 
     printf("Escolha uma opção: ");
     scanf("%d", &opcao);
 
-    if (opcao == 7) {
+    if (opcao == 8) {
       printf("Calculadora encerrada.\n");
       break;
     }
-  
-    printf("Digite o número na base 10: ");
-    scanf("%d", &numero);
-    
-    if (opcao == 1) {
-      decimalParaBinario(numero);
-    }else if(opcao == 2){
-      decimalParaBase8(numero);
-    }else if(opcao == 3){
-      decimalParaBase16(numero);
-    }else if(opcao == 4){
-      decimalParaBdc(numero);
-    }else if(opcao == 5){
-      decimalParaComplementoA2(numero);
+    if(opcao == 6) {
+      printf("Digite um número real: ");
+      scanf("%f", &numeroFloat);
+      decimalParaFloat(numeroFloat);
+    }else if(opcao == 7) {
+      printf("Digite um número real: ");
+      scanf("%lf", &numeroDouble);
+      decimalParaDouble(numeroDouble);
+    }else{
+      printf("Digite o número na base 10: ");
+      scanf("%d", &numero);
+
+      if (opcao == 1) {
+        decimalParaBinario(numero);
+      }else if(opcao == 2) {
+        decimalParaBase8(numero);
+      }else if(opcao == 3) {
+        decimalParaBase16(numero);
+      }else if(opcao == 4) {
+        decimalParaBdc(numero);
+      }else if(opcao == 5) {
+        decimalParaComplementoA2(numero);
+      }else {
+        printf("Opção inválida.\n");
+      }
     }
   }
   return 0;
